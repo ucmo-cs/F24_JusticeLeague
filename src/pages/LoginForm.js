@@ -1,90 +1,81 @@
 import Form from 'react-bootstrap/Form';
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import { useNavigate } from 'react-router-dom';
+
 
 function LoginForm() {
     
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
+    
+    
+  const handleLogin =async(e)=>{
+    e.preventDefault();
+    
+    const accountDto = {userId, password};
 
-    const[account, setAccount] = useState({
-        userId:"",
-        password:"",
-          });  
-     
-      const navigate = useNavigate();
-    
-    
-      const submitLogin =(e)=>{
-        e.preventDefault();
-    
-    
-        fetch("http://localhost:8081/user", {
-            method:"POST",
-            headers:{
-              "Content-Type" : "application/json"
-            },
-            body: JSON.stringify(account)
-          })
-          .then(res=>{
-              console.log(1,res);
-              if(res.status === 201){
-                return res.json();
-              }else{
-                return null;
-              }
-            })
-          .then(res=>{
-            console.log(res)
-            if(res!==null){
-                navigate('/Loan');
-            }else{
-              alert('fails');
-            }
-         
-          });
-       
-    }
-    
-    const changeValue=(e)=>{
-        console.log(e);
-        setAccount({
-         ...account, [e.target.name]:e.target.value  
-        });
-        console.log(e.target.name + " name "  );
-        console.log(e.target.value + " value " );
+    try{
+      const response = await fetch('http://localhost:8081/user',{
+        method:'POST',
+        headers: {
+          'Content-Type':'application/json',
+        },
+        body: JSON.stringify(accountDto)
+      });
+
+      if(response.ok){
+        const data = await response.text();
+        setMessage(data);
+        setError(false);
+      }else if (response.status === 401){
+        setMessage('Invalid user Id or Password');
+        setError(true);
+      }else{
+        setMessage('Something went wrong')
+        setError(true);
       }
+    }catch(error){
+      setMessage('Something went wrong');
+      setError(true);
+    }
+       
+    }; 
+
     
 
     return (
-        <Form onSubmit={submitLogin}>
-            <Form.Group className="mb-3" controlId="formGroupEmail">
-                <Form.Label>Username</Form.Label>
-                <Form.Control 
-                    name="userId"
-                    type="text" 
-                    placeholder="Enter user id" 
-                
-                    onChange = {changeValue} 
-                    required 
-                />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control 
-                    name="password"
-                    type="password" 
-                    placeholder="Password" 
-            
-                    onChange = {changeValue} 
-                    required 
-                />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-                Login
-            </Button>
-            {/* {message && <div className="text-danger mt-2">{message}</div>} */}
-        </Form>
-    );
-}
+      <div>
+      <Form onSubmit={handleLogin}>
+        <Form.Group className="mb-3" controlId="formUserId">
+          <Form.Label>User ID</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter user ID"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Login
+        </Button>
+      </Form>
+    </div>
+  );
+};
 
 export default LoginForm;
