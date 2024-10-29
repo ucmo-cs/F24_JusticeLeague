@@ -36,3 +36,36 @@
     transform: rotate(360deg);
   }
 }
+
+.custom-navbar {
+  background-color: #006E52 !important;
+}
+
+.custom-navbar .nav-link {
+  color: white !important;
+}
+
+.header-logo {
+  width: 150px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .header-logo {
+    width: 100px; 
+  }
+}
+.custom-navbar .navbar-toggler {
+  background-color: white !important; 
+}
+
+.custom-navbar .navbar-toggler-icon {
+  background-image: none;
+}
+
+.custom-navbar .navbar-toggler-icon::before {
+  content: "\2630"; 
+  color: #006E52;  
+  font-size: 1.5em;
+  border: none;
+}
