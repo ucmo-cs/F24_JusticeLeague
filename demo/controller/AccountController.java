@@ -3,6 +3,7 @@ package com.example.demo.controller;
 
 import com.example.demo.domain.Account;
 import com.example.demo.dto.AccountDto;
+import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.service.AccountService;
 import lombok.AllArgsConstructor;
@@ -43,7 +44,8 @@ public class AccountController {
         //check if user exists and if the passwords matches
         if(acct.isPresent() && acct.get().getPassword().equals(accountDto.getPassword())) {
             System.out.println("Login Successful!");
-            return ResponseEntity.ok("Login Successful!");
+            LoginResponseDto response = new LoginResponseDto("Login Successful!", acct.get().getUser_type());
+            return ResponseEntity.ok(response);
         }else{
             System.out.println("Login Failed!");
             return ResponseEntity.status(401).body("Invalid user Id or Password");
