@@ -10,7 +10,7 @@ import Image from 'react-bootstrap/Image';
 
 
 
-export default function Customer() {
+function Customer() {
   return (
 
     
@@ -119,4 +119,4 @@ function BackButton(){
 }
 
 
-//export default Customer;
+export default Customer;
