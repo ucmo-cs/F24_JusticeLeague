@@ -1,31 +1,26 @@
 package com.example.demo.domain;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
-public class Loan {
+public class OrderHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long loan_id;
-
-    private String loan_origin_amount;
-    private String interest_rate;
-
-    private Timestamp created_at;
+    private Long Order_id;
+    private String Order_date;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    //@JsonIgnore
-    private Account user_account;
+    @JoinColumn(name = "Customer_Id")
+    @JsonIgnore
+    private Customer customer;
 
 }

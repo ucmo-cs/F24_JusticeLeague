@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
-  const [account, setAccount] = useState({ userId: '', password: '', role: 'Customer' });
+  const [account, setAccount] = useState({ userId: '', password: '' });
   const [status, setStatus] = useState({ message: '', error: false });
 
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Create the account DTO using the state values
     const accountDto = { userId: account.userId, password: account.password };
-    
 
     try {
       const response = await fetch('http://localhost:8081/user', {
@@ -28,12 +28,11 @@ function LoginForm() {
       if (response.ok) {
         setStatus({ message: data.message, error: false });
 
+        // Navigate based on user type
         if (data.message === "Login Successful!") {
-          if (data.userType === 0) {
-            // Go to customer page (e.g., navigate('/customer'))
+          if (data.userType === 1) {
             navigate('/customer');
-          } else if (data.userType === 1) {
-            // Go to admin portal (e.g., navigate('/admin'))
+          } else if (data.userType === 0) {
             navigate('/loan');
           }
         }
@@ -47,6 +46,7 @@ function LoginForm() {
       setStatus({ message: 'Something went wrong2', error: true });
     }
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAccount((prevAccount) => ({ ...prevAccount, [name]: value }));
@@ -60,17 +60,16 @@ function LoginForm() {
             Sign In
           </h2>
           <Form onSubmit={handleLogin}>
-
             <Form.Group className="mb-3" controlId="formGroupEmail">
               <Form.Label>
                 <p style={{ color: "gray" }}>Username</p>
               </Form.Label>
               <Form.Control
-                name="userId"
+                name="userId" // Match this with the state
                 type="text"
-                placeholder="Enter user ID"
+                placeholder="Enter user name"
                 onChange={handleChange}
-                value={account.userId}
+                value={account.userId} // Match this with the state
                 required
               />
             </Form.Group>
@@ -80,11 +79,11 @@ function LoginForm() {
                 <p style={{ color: "gray" }}>Password</p>
               </Form.Label>
               <Form.Control
-                name="password"
+                name="password" // Match this with the state
                 type="password"
                 placeholder="Enter password"
                 onChange={handleChange}
-                value={account.password}
+                value={account.password} // Match this with the state
                 required
               />
             </Form.Group>

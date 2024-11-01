@@ -16,29 +16,35 @@ import java.sql.Timestamp;
 
 @AllArgsConstructor
 @RestController
+@RequestMapping("/loans") // Base URL for loan-related endpoints
 public class LoanController {
 
     private final LoanService loanService;
 
     @CrossOrigin
-    @PostMapping("/loan")
+    @PostMapping
     public ResponseEntity<?> save(@RequestBody LoanDto loanDto) {
-
         Loan loan = new ModelMapper().map(loanDto, Loan.class);
         loan.setCreated_at(new Timestamp(System.currentTimeMillis()));
 
-        String userId = "testId";
-        //accountId
-        //userId
-        //userName
-
+        String userId = "testId"; // Retrieve from session or auth context
         return new ResponseEntity<>(loanService.create(loan, userId), HttpStatus.CREATED);
-
     }
+
     @CrossOrigin
-    @GetMapping("/loans")
+    @GetMapping
     public ResponseEntity<?> findAll() {
         return new ResponseEntity<>(loanService.findAll(), HttpStatus.OK);
     }
 
+    @CrossOrigin
+    @GetMapping("/{loanId}")
+    public ResponseEntity<?> findByLoanId(@PathVariable Long loanId) {
+        Loan loan = loanService.findById(loanId); // Assuming you have a method to find by loanId
+        if (loan != null) {
+            return new ResponseEntity<>(loan, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
