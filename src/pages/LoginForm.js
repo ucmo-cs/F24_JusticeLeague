@@ -17,7 +17,7 @@ function LoginForm() {
     const accountDto = { userId: account.userId, password: account.password };
 
     try {
-      const response = await fetch('http://localhost:8081/user', {
+      const response = await fetch('http://localhost:8081/accounts/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(accountDto),
