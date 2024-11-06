@@ -1,10 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Account;
-import com.example.demo.dto.AccountDto;
-import com.example.demo.dto.LoginResponseDto;
-import com.example.demo.repository.AccountRepository;
-import com.example.demo.service.AccountService;
+import com.example.demo.domain.Loan;
+import com.example.demo.dto.LoanDto;
+import com.example.demo.service.LoanService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -12,49 +10,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/accounts") // Base URL for account-related endpoints
-public class AccountController {
+@RequestMapping("/loans") // Base URL for loan-related endpoints
+public class LoanController {
 
-    private final AccountService accountService;
-    private final AccountRepository accountRepository;
+    private final LoanService loanService;
 
     @CrossOrigin
-    @PostMapping
-    public ResponseEntity<?> save(@RequestBody AccountDto accountDto) {
-        Account account = new ModelMapper().map(accountDto, Account.class);
-        account.setCreated_at(new Timestamp(System.currentTimeMillis()));
-        return new ResponseEntity<>(accountService.create(account), HttpStatus.CREATED);
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> save(@RequestBody LoanDto loanDto, @PathVariable String userId) {
+        Loan loan = new ModelMapper().map(loanDto, Loan.class);
+        loan.setCreated_at(new Timestamp(System.currentTimeMillis()));
+
+        return new ResponseEntity<>(loanService.create(loan, userId), HttpStatus.CREATED);
     }
 
     @CrossOrigin
-    @PostMapping("/user")
-    public ResponseEntity<?> login(@RequestBody AccountDto accountDto) {
-        System.out.println("user id : " + accountDto.getUserId());
-        System.out.println("user password : " + accountDto.getPassword());
-
-        Optional<Account> acct = accountRepository.findByUserId(accountDto.getUserId());
-
-        // Check if user exists and if the passwords match
-        if(acct.isPresent() && acct.get().getPassword().equals(accountDto.getPassword())) {
-            System.out.println("Login Successful!");
-            LoginResponseDto response = new LoginResponseDto("Login Successful!", acct.get().getUser_type());
-            return ResponseEntity.ok(response);
-        } else {
-            System.out.println("Login Failed!");
-            return ResponseEntity.status(401).body("Invalid user Id or Password");
-        }
+    @GetMapping
+    public ResponseEntity<?> findAll() {
+        return new ResponseEntity<>(loanService.findAll(), HttpStatus.OK);
     }
 
     @CrossOrigin
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> findByUserId(@PathVariable String userId) {
-        Account account = accountService.findByUserId(userId);
-        if (account != null) {
-            return new ResponseEntity<>(account, HttpStatus.OK);
+    @GetMapping("/{loanId}") // Ensure this maps to the loan ID
+    public ResponseEntity<?> findByLoanId(@PathVariable Long loanId) {
+        Loan loan = loanService.findById(loanId); // Assuming you have a method to find by loanId
+        if (loan != null) {
+            return new ResponseEntity<>(loan, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
