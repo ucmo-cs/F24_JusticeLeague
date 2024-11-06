@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,13 +22,15 @@ public class LoanService {
 
     @Transactional
     public Loan create(Loan loan, String userId) {
-        Account account = accountRepository.findByUserId(userId).orElse(null);
+        Optional<Account> account = accountRepository.findByUserId(userId);
 
-        if (account != null) {
-            loan.setUser_account(account);
+        if (account.isPresent()) {
+            loan.setUser_account(account.get()); //associating user with loan
+            loan.setCreated_at(new Timestamp(System.currentTimeMillis())); //set current date
+            return loanRepository.save(loan);
+        }else{
+            throw new RuntimeException("Account not found with ID: " +userId);
         }
-
-        return loanRepository.save(loan);
     }
 
     @Transactional(readOnly = true)
