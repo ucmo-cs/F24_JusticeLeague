@@ -19,12 +19,11 @@ public class LoanController {
     private final LoanService loanService;
 
     @CrossOrigin
-    @PostMapping
-    public ResponseEntity<?> save(@RequestBody LoanDto loanDto) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> save(@RequestBody LoanDto loanDto, @PathVariable String userId) {
         Loan loan = new ModelMapper().map(loanDto, Loan.class);
         loan.setCreated_at(new Timestamp(System.currentTimeMillis()));
 
-        String userId = "testId"; // Retrieve from session or auth context
         return new ResponseEntity<>(loanService.create(loan, userId), HttpStatus.CREATED);
     }
 
