@@ -21,8 +21,8 @@ public class Customer {
     private String Name;
     private String email;
 
-    @OneToMany(mappedBy = "customer")
-    private List<OrderHeader> orders = new ArrayList<>();
+    //@OneToMany(mappedBy = "customer")
+    //private List<OrderHeader> orders = new ArrayList<>();
 
 
 }
