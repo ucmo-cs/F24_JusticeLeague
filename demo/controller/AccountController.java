@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Loan;
-import com.example.demo.dto.LoanDto;
-import com.example.demo.service.LoanService;
+import com.example.demo.domain.Account;
+import com.example.demo.dto.AccountDto;
+import com.example.demo.dto.LoginResponseDto;
+import com.example.demo.repository.AccountRepository;
+import com.example.demo.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -10,37 +12,75 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/loans") // Base URL for loan-related endpoints
-public class LoanController {
+@RequestMapping("/accounts") // Base URL for account-related endpoints
+public class AccountController {
 
-    private final LoanService loanService;
+    private final AccountService accountService;
+    private final AccountRepository accountRepository;
 
     @CrossOrigin
-    @PostMapping("/{userId}")
-    public ResponseEntity<?> save(@RequestBody LoanDto loanDto, @PathVariable String userId) {
-        Loan loan = new ModelMapper().map(loanDto, Loan.class);
-        loan.setCreated_at(new Timestamp(System.currentTimeMillis()));
-
-        return new ResponseEntity<>(loanService.create(loan, userId), HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<?> save(@RequestBody AccountDto accountDto) {
+        Account account = new ModelMapper().map(accountDto, Account.class);
+        account.setCreated_at(new Timestamp(System.currentTimeMillis()));
+        return new ResponseEntity<>(accountService.create(account), HttpStatus.CREATED);
     }
 
     @CrossOrigin
-    @GetMapping
-    public ResponseEntity<?> findAll() {
-        return new ResponseEntity<>(loanService.findAll(), HttpStatus.OK);
+    @PostMapping("/user")
+    public ResponseEntity<?> login(@RequestBody AccountDto accountDto) {
+        System.out.println("user id : " + accountDto.getUserId());
+        System.out.println("user password : " + accountDto.getPassword());
+
+        Optional<Account> acct = accountRepository.findByUserId(accountDto.getUserId());
+
+        // Check if user exists and if the passwords match
+        if (acct.isPresent() && acct.get().getPassword().equals(accountDto.getPassword())) {
+            System.out.println("Login Successful!");
+            LoginResponseDto response = new LoginResponseDto("Login Successful!", acct.get().getUser_type());
+            return ResponseEntity.ok(response);
+        } else {
+            System.out.println("Login Failed!");
+            return ResponseEntity.status(401).body("Invalid user Id or Password");
+        }
     }
 
     @CrossOrigin
-    @GetMapping("/{loanId}") // Ensure this maps to the loan ID
-    public ResponseEntity<?> findByLoanId(@PathVariable Long loanId) {
-        Loan loan = loanService.findById(loanId); // Assuming you have a method to find by loanId
-        if (loan != null) {
-            return new ResponseEntity<>(loan, HttpStatus.OK);
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findByUserId(@PathVariable String userId) {
+        Account account = accountService.findByUserId(userId);
+        if (account != null) {
+            return new ResponseEntity<>(account, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @CrossOrigin
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateAccount(@PathVariable String userId, @RequestBody AccountDto accountDto) {
+        Optional<Account> existingAccount = accountRepository.findByUserId(userId);
+
+        if (existingAccount.isPresent()) {
+            Account account = existingAccount.get();
+            // Update fields from the DTO to the existing account entity
+            account.setFirstName(accountDto.getFirstName());
+            account.setLastName(accountDto.getLastName());
+            account.setPhoneNumber(accountDto.getPhoneNumber());
+            account.setEmail(accountDto.getEmail());
+            account.setUserId(accountDto.getUserId());
+
+            // Optionally, you can update the timestamp if needed
+            account.setCreated_at(new Timestamp(System.currentTimeMillis()));
+
+            accountRepository.save(account); // Save the updated account to the database
+            return ResponseEntity.ok("Account updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
         }
     }
 }
