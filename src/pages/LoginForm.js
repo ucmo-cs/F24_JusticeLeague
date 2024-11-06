@@ -4,8 +4,9 @@ import Button from 'react-bootstrap/Button';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
+
 function LoginForm() {
-  const [account, setAccount] = useState({ userId: '', password: '' });
+  const [account, setAccount] = useState({ userId: '', password: '', role: 'Customer' });
   const [status, setStatus] = useState({ message: '', error: false });
 
   const navigate = useNavigate();
@@ -13,8 +14,9 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Create the account DTO using the state values
+    //create accountDTO using the state values
     const accountDto = { userId: account.userId, password: account.password };
+    
 
     try {
       const response = await fetch('http://localhost:8081/accounts/user', {
@@ -28,11 +30,13 @@ function LoginForm() {
       if (response.ok) {
         setStatus({ message: data.message, error: false });
 
-        // Navigate based on user type
+        //navigating base don user type
         if (data.message === "Login Successful!") {
-          if (data.userType === 1) {
+          if (data.userType === 0) {
+            // Go to customer page (e.g., navigate('/customer'))
             navigate('/customer');
-          } else if (data.userType === 0) {
+          } else if (data.userType === 1) {
+            // Go to admin portal (e.g., navigate('/admin'))
             navigate('/loan');
           }
         }
@@ -43,10 +47,9 @@ function LoginForm() {
       }
     } catch (error) {
       console.error('Fetch error:', error);
-      setStatus({ message: 'Something went wrong2', error: true });
+      setStatus({ message: `Something went wrong: ${error.message}`, error: true });
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAccount((prevAccount) => ({ ...prevAccount, [name]: value }));
@@ -56,20 +59,21 @@ function LoginForm() {
     <Container>
       <Row className="justify-content-md-center">
         <Col md={4}>
-          <h2 style={{ color: "#006400", paddingTop: "20px", paddingBottom: "20px" }} className="text-center">
+          <h2 style={{ color: "#05654d", paddingTop: "20px", paddingBottom: "20px" }} className="text-center">
             Sign In
           </h2>
           <Form onSubmit={handleLogin}>
+
             <Form.Group className="mb-3" controlId="formGroupEmail">
               <Form.Label>
                 <p style={{ color: "gray" }}>Username</p>
               </Form.Label>
               <Form.Control
-                name="userId" // Match this with the state
+                name="userId"
                 type="text"
-                placeholder="Enter user name"
+                placeholder="Enter user ID"
                 onChange={handleChange}
-                value={account.userId} // Match this with the state
+                value={account.userId}
                 required
               />
             </Form.Group>
@@ -79,17 +83,17 @@ function LoginForm() {
                 <p style={{ color: "gray" }}>Password</p>
               </Form.Label>
               <Form.Control
-                name="password" // Match this with the state
+                name="password"
                 type="password"
                 placeholder="Enter password"
                 onChange={handleChange}
-                value={account.password} // Match this with the state
+                value={account.password}
                 required
               />
             </Form.Group>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Button style={{ backgroundColor: '#006400', width: "100%" }} variant="success" type="submit">
+              <Button style={{ backgroundColor: '#05654d', width: "100%" }} variant="success" type="submit">
                 Sign In
               </Button>
             </div>
