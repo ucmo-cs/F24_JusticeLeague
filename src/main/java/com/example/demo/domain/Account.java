@@ -1,6 +1,7 @@
 package com.example.demo.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +32,9 @@ public class Account {
     private Timestamp created_at;
 
     @OneToMany(mappedBy = "user_account")
+    @JsonIgnore
     private List<Loan>  loans = new ArrayList<>();
+
 
 
 }

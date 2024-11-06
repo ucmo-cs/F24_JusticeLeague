@@ -22,7 +22,6 @@ public class Loan {
 
     private String loan_origin_amount;
     private String interest_rate;
-
     private Timestamp created_at;
 
     @ManyToOne
