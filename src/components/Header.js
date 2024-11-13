@@ -1,11 +1,7 @@
 import React from 'react';
-import {Card, Nav, Navbar} from 'react-bootstrap';
-//import { Link } from 'react-router-dom';
+import { Nav, Navbar} from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
-import logo from '../images/cblogo.png';
-
-
-import NavDropdown from 'react-bootstrap/NavDropdown';
+import logo from '../images/CommerceBankLogo.png';
 
 
 function Header(props) {
@@ -19,7 +15,6 @@ function Header(props) {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/loan">Loan</Nav.Link>
-            <Nav.Link href="/customer">Customer</Nav.Link>
             <Nav.Link href="/info">Info</Nav.Link>
           </Nav>
         </Navbar.Collapse>
