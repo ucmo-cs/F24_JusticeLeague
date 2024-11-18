@@ -36,12 +36,13 @@ public class AccountController {
         System.out.println("user id : " + accountDto.getUserId());
         System.out.println("user password : " + accountDto.getPassword());
 
+
         Optional<Account> acct = accountRepository.findByUserId(accountDto.getUserId());
 
         // Check if user exists and if the passwords match
         if (acct.isPresent() && acct.get().getPassword().equals(accountDto.getPassword())) {
             System.out.println("Login Successful!");
-            LoginResponseDto response = new LoginResponseDto("Login Successful!", acct.get().getUser_type());
+            LoginResponseDto response = new LoginResponseDto("Login Successful!", acct.get().getUser_type(),acct.get().getUserId());
             return ResponseEntity.ok(response);
         } else {
             System.out.println("Login Failed!");
@@ -59,28 +60,16 @@ public class AccountController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @CrossOrigin
+    
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateAccount(@PathVariable String userId, @RequestBody AccountDto accountDto) {
-        Optional<Account> existingAccount = accountRepository.findByUserId(userId);
-
-        if (existingAccount.isPresent()) {
-            Account account = existingAccount.get();
-            // Update fields from the DTO to the existing account entity
-            account.setFirstName(accountDto.getFirstName());
-            account.setLastName(accountDto.getLastName());
-            account.setPhoneNumber(accountDto.getPhoneNumber());
-            account.setEmail(accountDto.getEmail());
-            account.setUserId(accountDto.getUserId());
-
-            // Optionally, you can update the timestamp if needed
-            account.setCreated_at(new Timestamp(System.currentTimeMillis()));
-
-            accountRepository.save(account); // Save the updated account to the database
-            return ResponseEntity.ok("Account updated successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
+    public ResponseEntity<Account> updateAccount(
+            @PathVariable String userId,
+            @RequestBody Account accountDetails) {
+        try {
+            Account updatedAccount = accountService.updateAccount(userId, accountDetails);
+            return ResponseEntity.ok(updatedAccount);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 }
