@@ -28,15 +28,16 @@ function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
+        console.log("Response Data:", data); 
         setStatus({ message: data.message, error: false });
 
         //navigating base don user type
         if (data.message === "Login Successful!") {
           if (data.userType === 0) {
-            // Go to customer page (e.g., navigate('/customer'))
-            navigate('/customer');
+            
+            navigate(`/customer/${data.userId}`); 
           } else if (data.userType === 1) {
-            // Go to admin portal (e.g., navigate('/admin'))
+            
             navigate('/loan');
           }
         }
