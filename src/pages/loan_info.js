@@ -113,28 +113,34 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: 'Arial, sans-serif',
-        color: '#000000', // Dark blue, Commerce Bank style
+        color: '#05654d',
         marginTop: '20px',
     },
     header: {
         fontSize: '24px',
-        color: '#000000', // Lighter blue for emphasis
+        color: '#05654d',
         marginBottom: '20px',
     },
     table: {
-        width: '80%',
-        maxWidth: '600px',
+        width: '45%',
+        maxWidth: '800%',
         marginBottom: '20px',
         borderCollapse: 'collapse',
+        border: '2px solid grey',
+        borderRadius: '10px',
+        overflow: 'hidden',
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
     },
     tableHeader: {
-        backgroundColor: '#006400', // Light blue, Commerce Bank style
-        color: '#FFFFFF', 
+        backgroundColor: '#05654d',
+        color: '#FFFFFF',
         fontWeight: 'bold',
-        padding: '10px',
-        fontSize: '18px',
         textAlign: 'center',
+        padding: '10px',
+        fontSize: '16px',
+        borderBottom: '2px solid grey', 
+        borderLeft: 'none',
+        borderRight: 'none',
     },
     cellLabel: {
         backgroundColor: '#f0f4f8',
