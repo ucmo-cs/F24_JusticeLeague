@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +41,10 @@ public class LoanService {
     public Loan findById(Long loanId) {
         Optional<Loan> loan = loanRepository.findById(loanId);
         return loan.orElse(null); // Return the loan if found, otherwise return null
+    }
+
+    @Transactional
+    public List<Loan> getLoansByUserId(String userId) {
+        return loanRepository.findLoansByUserId(userId);
     }
 }
