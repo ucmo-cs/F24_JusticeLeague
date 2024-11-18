@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -36,11 +38,22 @@ public class LoanController {
     @CrossOrigin
     @GetMapping("/{loanId}") // Ensure this maps to the loan ID
     public ResponseEntity<?> findByLoanId(@PathVariable Long loanId) {
-        Loan loan = loanService.findById(loanId); // Assuming you have a method to find by loanId
+        Loan loan = loanService.findById(loanId);
         if (loan != null) {
             return new ResponseEntity<>(loan, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @CrossOrigin
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Loan>> getLoansByUserId(@PathVariable String userId) {
+        List<Loan> loans = loanService.getLoansByUserId(userId);
+        System.out.println("Fetching loans for userId: " + userId);
+
+        if (loans.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(loans);
     }
 }
