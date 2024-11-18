@@ -6,9 +6,11 @@ import lombok.Data;
 public class LoginResponseDto {
     private String message;
     private int userType;
+    private String userId;
 
-    public LoginResponseDto(String message, int userType) {
+    public LoginResponseDto(String message, int userType, String userId) {
         this.message = message;
         this.userType = userType;
+        this.userId = userId;
     }
 }
