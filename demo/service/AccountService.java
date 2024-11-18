@@ -1,4 +1,3 @@
-
 package com.example.demo.service;
 
 import com.example.demo.domain.Account;
@@ -26,4 +25,18 @@ public class AccountService {
         return accountRepository.findByUserId(userId).orElse(null);
     }
 
+    public Account updateAccount(String userId, Account updatedAccount) {
+        // Find the existing account by userId
+        Account existingAccount = accountRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Account not found for userId: " + userId));
+
+        // Update the fields with the provided data
+        existingAccount.setFirstName(updatedAccount.getFirstName());
+        existingAccount.setLastName(updatedAccount.getLastName());
+        existingAccount.setPhoneNumber(updatedAccount.getPhoneNumber());
+        existingAccount.setEmail(updatedAccount.getEmail());
+
+        // Save and return the updated account
+        return accountRepository.save(existingAccount);
+    }
 }
