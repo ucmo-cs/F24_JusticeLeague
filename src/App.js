@@ -1,7 +1,7 @@
 import Header from './components/Header';
 import Header2 from './components/Header2';
 import LoginHeader from './components/LoginHeader';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, matchPath } from 'react-router-dom';
 import Loan from './pages/Loan';
 import Customer from './pages/Customer';
 import SaveLoan from './pages/SaveLoan';
@@ -13,25 +13,35 @@ import Info from './pages/Info';
 function App() {
   const location = useLocation();
 
-  //determine which header to display based on login
+  // Determine which header to display based on login
   const renderHeader = () => {
-    if(location.pathname === "/") return <LoginHeader />;
-    if(["/loanForm","/loan","/loanInfo/:accountId"].includes(location.pathname)) return <Header />;
-    if (location.pathname === "/customer/:userId") return <Header2 />;
-  }
+    const currentPath = location.pathname;
+  
+    if (currentPath === "/") return <LoginHeader />;
+    
+    {/* admin header */}
+    if (["/loanForm", "/loan"].includes(currentPath)) return <Header />;
+    if (matchPath("/loanInfo/:loanId/:accountId", currentPath)) return <Header />;
+    {/* customer header */}
+    if (matchPath("/customer/:userId", currentPath)) return <Header />;
+    if (matchPath("/info/:userId", currentPath)) return <Header />;
+  };
+  
+
   return (
-      <div>
-        {renderHeader()}
-        
-        <Routes>
-          <Route path="/" exact={true} element={<LoginForm />} />
+    <div>
+      {renderHeader()}
+
+      <Routes>
+      <Route path="/" exact={true} element={<LoginForm />} />
           <Route path="/loanForm" exact={true} element={<SaveLoan />} />  
           <Route path="/loan" exact={true} element={<Loan_bk />} />
           <Route path="/customer/:userId" exact={true} element={<Customer />} />
-          <Route path="/loanInfo/:accountId" element={<LoanInfo />} /> {/* Use accountId */}
+          <Route path="/loanInfo/:loanId/:accountId" element={<LoanInfo />} /> {/* Use accountId */}
           <Route path='/info/:userId' exact={true} element={<Info/>}/>
-        </Routes>
-      </div>
+
+      </Routes>
+    </div>
   );
 }
 
