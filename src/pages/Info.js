@@ -78,7 +78,7 @@ function Customer() {
         <div style={styles.container}>
           <Form style={styles.form} onSubmit={handleSubmit}>
             <Form.Group controlId="FirstNameID">
-              <Form.Label>First Name:</Form.Label>
+              <Form.Label>First Name</Form.Label>
               <Form.Control 
                 type="text"
                 name="firstName"
@@ -88,7 +88,7 @@ function Customer() {
               />
             </Form.Group>
             <Form.Group controlId="LastNameID">
-              <Form.Label>Last Name:</Form.Label>
+              <Form.Label>Last Name</Form.Label>
               <Form.Control 
                 type="text"
                 name="lastName"
@@ -98,7 +98,7 @@ function Customer() {
               />
             </Form.Group>
             <Form.Group controlId="PhoneNumberID">
-              <Form.Label>Phone Number:</Form.Label>
+              <Form.Label>Phone Number</Form.Label>
               <Form.Control 
                 type="text"
                 name="phoneNumber"
@@ -108,7 +108,7 @@ function Customer() {
               />
             </Form.Group>
             <Form.Group controlId="EmailID">
-              <Form.Label>Email Address:</Form.Label>
+              <Form.Label>Email Address</Form.Label>
               <Form.Control 
                 type="text"
                 name="email"
@@ -118,7 +118,7 @@ function Customer() {
               />
             </Form.Group>
             <Form.Group controlId="UsernameID">
-              <Form.Label>User Name:</Form.Label>
+              <Form.Label>User Name</Form.Label>
               <Form.Control 
                 type="text"
                 name="userName"
@@ -162,7 +162,8 @@ const styles = {
       alignItems: 'center',
       backgroundColor: '#05654d', 
       borderColor: '#05654d',
-      fontSize: '16px'
+      fontSize: '16px',
+      marginTop: '4%',
     },
     buttons: {
       backgroundColor: '#05654d', 
