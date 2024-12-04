@@ -1,51 +1,62 @@
-// LoanInfo.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 
 const LoanInfo = () => {
-    const { accountId } = useParams(); // Get accountId from the URL
+    const { loanId, accountId } = useParams(); // Get loanId and accountId from the URL
     const [loan, setLoan] = useState(null); // Single loan object
+    const [account, setAccount] = useState(null); // Account details object
     const [error, setError] = useState(null);
     
-    useEffect(() => {
-        const fetchLoans = async () => {
-            try {
-                const response = await fetch('http://localhost:8081/loans'); // Fetch all loans
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const loansData = await response.json();
-                console.log('Fetched loans:', loansData);
+    const navigate = useNavigate();
 
-                // Find the loan by the provided accountId
-                const foundLoan = loansData.find(loan => loan.user_account.account_id === parseInt(accountId, 10));
-                
-                if (foundLoan) {
-                    setLoan(foundLoan); // Set the found loan
-                } else {
-                    setError('Loan not found'); // Handle not found case
+    useEffect(() => {
+        const fetchLoanWithAccountDetails = async () => {
+            try {
+                const response = await fetch(`http://localhost:8081/loans/${loanId}/withAccount`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch loan and account details');
                 }
-            } catch (error) {
-                setError('There was a problem with the fetch operation: ' + error.message);
-                console.error('Error fetching loans:', error);
+                const data = await response.json();
+                setLoan(data.loan);
+                setAccount(data.account);
+            } catch (err) {
+                setError(err.message);
             }
         };
-
-        fetchLoans();
-    }, [accountId]); // Effect runs when accountId changes
-
+    
+        if (loanId) fetchLoanWithAccountDetails();
+    }, [loanId]);
+    
     if (error) {
         return <div style={styles.error}>Error: {error}</div>;
     }
 
-    if (!loan) {
+    if (!loan || !account) {
         return <div style={styles.loading}>Loading...</div>; // Loading state
     }
+    
+    const handleBackClick = () => {
+        const userType = localStorage.getItem('userType');
+        console.log('userType: ', userType);
+        
+        if (userType === '1') {  
+            navigate('/loan'); 
+        } else if (userType === '0') {  
+            navigate(`/customer/${account.userId}`); 
+        }
+    };
+    
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.header}>Loan Information</h1>
-            
+            <div style={styles.headerContainer}>
+                <Button style={styles.buttons} onClick={() => navigate('/')}>Logout</Button>
+                <h1 style={styles.header}>Loan Information</h1>
+                <Button style={styles.buttons} onClick={handleBackClick}>Back</Button>
+            </div>
+
+            {/* Loan Details Table */}
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -74,6 +85,7 @@ const LoanInfo = () => {
                 </tbody>
             </table>
 
+            {/* Account Details Table */}
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -83,23 +95,23 @@ const LoanInfo = () => {
                 <tbody>
                     <tr>
                         <td style={styles.cellLabel}>Account ID</td>
-                        <td style={styles.cellValue}>{loan.user_account.account_id}</td>
+                        <td style={styles.cellValue}>{account.account_id}</td>
                     </tr>
                     <tr>
                         <td style={styles.cellLabel}>User ID</td>
-                        <td style={styles.cellValue}>{loan.user_account.userId}</td>
+                        <td style={styles.cellValue}>{account.userId}</td>
                     </tr>
                     <tr>
                         <td style={styles.cellLabel}>User Name</td>
-                        <td style={styles.cellValue}>{loan.user_account.userName}</td>
+                        <td style={styles.cellValue}>{account.userName}</td>
                     </tr>
                     <tr>
                         <td style={styles.cellLabel}>Email</td>
-                        <td style={styles.cellValue}>{loan.user_account.email}</td>
+                        <td style={styles.cellValue}>{account.email}</td>
                     </tr>
                     <tr>
                         <td style={styles.cellLabel}>Phone Number</td>
-                        <td style={styles.cellValue}>{loan.user_account.phoneNumber}</td>
+                        <td style={styles.cellValue}>{account.phoneNumber}</td>
                     </tr>
                 </tbody>
             </table>
@@ -115,6 +127,13 @@ const styles = {
         fontFamily: 'Arial, sans-serif',
         color: '#05654d',
         marginTop: '20px',
+    },
+    headerContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        padding: '0 20px',
     },
     header: {
         fontSize: '24px',
@@ -138,7 +157,7 @@ const styles = {
         textAlign: 'center',
         padding: '10px',
         fontSize: '16px',
-        borderBottom: '2px solid grey', 
+        borderBottom: '2px solid grey',
         borderLeft: 'none',
         borderRight: 'none',
     },
@@ -164,6 +183,11 @@ const styles = {
         fontSize: '18px',
         color: 'red',
         textAlign: 'center',
+    },
+    buttons: {
+        backgroundColor: '#05654d',
+        borderColor: '#05654d',
+        fontSize: '16px',
     },
 };
 
