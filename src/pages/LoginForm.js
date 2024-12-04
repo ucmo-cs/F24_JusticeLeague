@@ -33,6 +33,8 @@ function LoginForm() {
 
         //navigating base don user type
         if (data.message === "Login Successful!") {
+          localStorage.setItem('userType', data.userType);
+          localStorage.setItem('userId', data.userId);
           if (data.userType === 0) {
             
             navigate(`/customer/${data.userId}`); 

@@ -22,14 +22,15 @@ function Loan_bk() {
 
   const goToLoanInfo = (loan) => {
     const accountId = loan.user_account ? loan.user_account.account_id : null;
-    if (accountId) {
-      navigate(`/loanInfo/${accountId}`);
+    const loanId = loan.loan_id;  
+    if (accountId && loanId) {
+      navigate(`/loanInfo/${loanId}/${accountId}`);
     } else {
-      console.error("accountId is missing for loan:", loan);
-      alert("Unable to navigate: accountId is missing for this loan.");
+      console.error("Missing loanId or accountId for loan:", loan);
+      alert("Unable to navigate: loanId or accountId is missing for this loan.");
     }
   };
-
+  
   return (
     <div style={styles.container}>
       <h1 style={styles.header}></h1>
