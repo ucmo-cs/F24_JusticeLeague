@@ -1,51 +1,47 @@
-// LoanInfo.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const LoanInfo = () => {
-    const { accountId } = useParams(); // Get accountId from the URL
-    const [loan, setLoan] = useState(null); // Single loan object
+    const { accountId } = useParams();
+    const [loan, setLoan] = useState(null);
     const [error, setError] = useState(null);
-    
+
     useEffect(() => {
         const fetchLoans = async () => {
             try {
-                const response = await fetch('http://localhost:8081/loans'); // Fetch all loans
+                if (!accountId || isNaN(accountId)) {
+                    throw new Error('Invalid Account ID.');
+                }
+                const response = await fetch('http://localhost:8081/loans');
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Failed to fetch loan data.');
                 }
                 const loansData = await response.json();
-                console.log('Fetched loans:', loansData);
-
-                // Find the loan by the provided accountId
                 const foundLoan = loansData.find(loan => loan.user_account.account_id === parseInt(accountId, 10));
-                
                 if (foundLoan) {
-                    setLoan(foundLoan); // Set the found loan
+                    setLoan(foundLoan);
                 } else {
-                    setError('Loan not found'); // Handle not found case
+                    setError('Loan not found for the provided account ID.');
                 }
-            } catch (error) {
-                setError('There was a problem with the fetch operation: ' + error.message);
-                console.error('Error fetching loans:', error);
+            } catch (err) {
+                setError(err.message);
             }
         };
 
         fetchLoans();
-    }, [accountId]); // Effect runs when accountId changes
+    }, [accountId]);
 
     if (error) {
-        return <div style={styles.error}>Error: {error}</div>;
+        return <div style={styles.error}>{error}</div>;
     }
 
     if (!loan) {
-        return <div style={styles.loading}>Loading...</div>; // Loading state
+        return <div style={styles.loading}>Loading loan information...</div>;
     }
 
     return (
         <div style={styles.container}>
             <h1 style={styles.header}>Loan Information</h1>
-            
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -73,7 +69,6 @@ const LoanInfo = () => {
                     </tr>
                 </tbody>
             </table>
-
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -81,10 +76,7 @@ const LoanInfo = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td style={styles.cellLabel}>Account ID</td>
-                        <td style={styles.cellValue}>{loan.user_account.account_id}</td>
-                    </tr>
+                   
                     <tr>
                         <td style={styles.cellLabel}>User ID</td>
                         <td style={styles.cellValue}>{loan.user_account.userId}</td>
@@ -101,40 +93,60 @@ const LoanInfo = () => {
                         <td style={styles.cellLabel}>Phone Number</td>
                         <td style={styles.cellValue}>{loan.user_account.phoneNumber}</td>
                     </tr>
+                    <tr>
+                        <td style={styles.cellLabel}>Routing Number</td>
+                        <td style={styles.cellValue}>{loan.user_account.routingNumber}</td>
+                    </tr>
+                    <tr>
+                        <td style={styles.cellLabel}>Account Number</td>
+                        <td style={styles.cellValue}>{loan.user_account.bankNumber}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     );
 };
-
 const styles = {
     container: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: 'Arial, sans-serif',
-        color: '#000000', // Dark blue, Commerce Bank style
+        color: '#05654d',
         marginTop: '20px',
+    },
+    headerContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        padding: '0 20px',
     },
     header: {
         fontSize: '24px',
-        color: '#000000', // Lighter blue for emphasis
+        color: '#05654d',
         marginBottom: '20px',
     },
     table: {
-        width: '80%',
-        maxWidth: '600px',
+        width: '45%',
+        maxWidth: '800%',
         marginBottom: '20px',
         borderCollapse: 'collapse',
+        border: '2px solid grey',
+        borderRadius: '10px',
+        overflow: 'hidden',
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
     },
     tableHeader: {
-        backgroundColor: '#006400', // Light blue, Commerce Bank style
-        color: '#FFFFFF', 
+        backgroundColor: '#05654d',
+        color: '#FFFFFF',
         fontWeight: 'bold',
-        padding: '10px',
-        fontSize: '18px',
         textAlign: 'center',
+        padding: '10px',
+        fontSize: '16px',
+        borderBottom: '2px solid grey',
+        borderLeft: 'none',
+        borderRight: 'none',
     },
     cellLabel: {
         backgroundColor: '#f0f4f8',
@@ -158,6 +170,11 @@ const styles = {
         fontSize: '18px',
         color: 'red',
         textAlign: 'center',
+    },
+    buttons: {
+        backgroundColor: '#05654d',
+        borderColor: '#05654d',
+        fontSize: '16px',
     },
 };
 
