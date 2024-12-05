@@ -1,42 +1,60 @@
-// SaveLoan.js
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 function SaveLoan() {
+
+  //create loan state
   const [loan, setLoan] = useState({
     loan_origin_amount: "",
     interest_rate: "",
-    account_id: "",
-    created_at: new Date().toISOString().substring(0, 10), // Automatically set current date
+    user_id: "",
+    //automatic date creation
+    created_at: new Date().toISOString().substring(0, 10),
   });
 
+  //used to be able to redirect upon a button click
   const navigate = useNavigate();
 
+  //function for submit button
   const submitLoan = (e) => {
+    //prevent default form submission behavior
     e.preventDefault();
 
-    fetch("http://localhost:8081/loan", {
+    const url = `http://localhost:8081/loans/${loan.user_id}`;
+    
+    //fetch data from the backend based upon the API url
+    //post information to the backend
+    fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(loan)
+      body: JSON.stringify({
+        loan_origin_amount: loan.loan_origin_amount,
+        interest_rate: loan.interest_rate,
+        created_at: loan.created_at,
+      })
     })
       .then(res => {
         console.log("Response:", res);
+        //if successful
         if (res.status === 201) {
           return res.json();
+        //if not successful throw exception  
         } else {
-          return null;
+          throw new Error("Submission failed");
         }
       })
       .then(res => {
-        if (res !== null) {
+        if (res) {
           navigate('/Loan');
-        } else {
-          alert('Submission failed');
         }
+      })
+      //error handling
+      .catch(error => {
+        console.error("Error submitting loan:", error);
+        alert('Submission failed');
       });
   }
 
@@ -49,7 +67,7 @@ function SaveLoan() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Create New Loan (Does Not Currently Work)</h1>
+      <h1 style={styles.header}>Create New Loan</h1>
       
       <Form onSubmit={submitLoan} style={styles.form}>
         <Form.Group className="mb-3" controlId="formLoanOriginAmount">
@@ -76,14 +94,14 @@ function SaveLoan() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formAccountId">
-          <Form.Label>Account ID (Until we connect this to account/user)</Form.Label>
+        <Form.Group className="mb-3" controlId="formUserId">
+          <Form.Label>User ID</Form.Label>
           <Form.Control 
-            type="number"
-            name="account_id" 
-            value={loan.account_id} 
+            type="text"
+            name="user_id" 
+            value={loan.user_id} 
             onChange={changeValue} 
-            placeholder="Enter associated account ID" 
+            placeholder="Enter User ID" 
             required
           />
         </Form.Group>
@@ -128,8 +146,8 @@ const styles = {
   },
   submitButton: {
     width: '100%',
-    backgroundColor: '#006400', 
-    borderColor: '#006400',
+    backgroundColor: ' #05654d', 
+    borderColor: ' #05654d',
     fontSize: '16px',
   }
 };
