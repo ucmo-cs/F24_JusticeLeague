@@ -10,38 +10,58 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/loans") // Base URL for loan-related endpoints
+@RequestMapping("/loans") //base URL for endpoints
 public class LoanController {
 
     private final LoanService loanService;
 
     @CrossOrigin
-    @PostMapping
-    public ResponseEntity<?> save(@RequestBody LoanDto loanDto) {
+    @PostMapping("/{userId}")
+    //save loan by taking loandto and user id
+    public ResponseEntity<?> save(@RequestBody LoanDto loanDto, @PathVariable String userId) {
+        //map loandto to loan
         Loan loan = new ModelMapper().map(loanDto, Loan.class);
+
+        //timestamp for new loan
         loan.setCreated_at(new Timestamp(System.currentTimeMillis()));
 
-        String userId = "testId"; // Retrieve from session or auth context
+        //persisting loan to the database
         return new ResponseEntity<>(loanService.create(loan, userId), HttpStatus.CREATED);
     }
 
     @CrossOrigin
     @GetMapping
+    //getting all loans in the database
     public ResponseEntity<?> findAll() {
         return new ResponseEntity<>(loanService.findAll(), HttpStatus.OK);
     }
 
     @CrossOrigin
-    @GetMapping("/{loanId}") // Ensure this maps to the loan ID
+    @GetMapping("/{loanId}")
+    //retrieving a specific loan by loanid
     public ResponseEntity<?> findByLoanId(@PathVariable Long loanId) {
-        Loan loan = loanService.findById(loanId); // Assuming you have a method to find by loanId
+        Loan loan = loanService.findById(loanId);
         if (loan != null) {
             return new ResponseEntity<>(loan, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @CrossOrigin
+    @GetMapping("/user/{userId}")
+    //retrieve all loans associated to a specific user
+    public ResponseEntity<List<Loan>> getLoansByUserId(@PathVariable String userId) {
+        List<Loan> loans = loanService.getLoansByUserId(userId);
+        System.out.println("Fetching loans for userId: " + userId);
+
+        if (loans.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(loans);
     }
 }

@@ -24,6 +24,8 @@ public class Account {
 
     private int user_type;
     private String userId;
+    private String firstName;
+    private String lastName;
     private String userName;
     private String password;
     private String email;

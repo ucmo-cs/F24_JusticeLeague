@@ -23,10 +23,10 @@ public class Loan {
     private String loan_origin_amount;
     private String interest_rate;
     private Timestamp created_at;
+    private String pay_off_date;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    //@JsonIgnore
+    @JoinColumn(name = "user_id")
     private Account user_account;
 
 }
