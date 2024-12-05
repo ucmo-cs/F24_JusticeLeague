@@ -6,20 +6,24 @@ function Loan_bk() {
   const [loans, setLoans] = useState([]);
   const navigate = useNavigate();
 
+  //fetching the loans from API endpoint
   useEffect(() => {
     fetch("http://localhost:8081/loans", { method: "GET" })
       .then(res => res.json())
       .then(res => { 
-        console.log("Loan data:", res); // For debugging
+        console.log("Loan data:", res); 
         setLoans(res); 
       })
+      //error handling
       .catch(error => console.error("Error fetching loans:", error));
   }, []);
 
+  //navigates to loan creation form
   const movePage = () => {
     navigate("/loanForm");
   };
 
+  //if user clicks on a loan it will give user info and loan info
   const goToLoanInfo = (loan) => {
     const accountId = loan.user_account ? loan.user_account.account_id : null;
     if (accountId) {
@@ -32,9 +36,14 @@ function Loan_bk() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Loans Overview</h1>
       
-      <Button variant="success" onClick={movePage} style={styles.button}>Create Loan</Button>
+      <div style={styles.buttonContainer}>
+      <Button style={styles.button} onClick={() => window.location.href = 'http://localhost:3000'}>
+          Logout
+        </Button>
+        <Button variant="success" onClick={movePage} style={styles.button}>Create Loan</Button>
+      </div>
+
       
       <Table striped bordered hover style={styles.table}>
         <thead>
@@ -73,49 +82,55 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    fontFamily: 'Arial, sans-serif',
-    color: '#000000', // Dark blue, Commerce Bank style
+    color: '#000000', 
     marginTop: '20px',
   },
   header: {
-    fontSize: '24px',
-    color: '#000000', // Darker blue for emphasis
+    fontSize: '30px',
+    color: '#000000', 
     marginBottom: '20px',
   },
   button: {
+    backgroundColor: '#05654d',
+    borderColor: '#05654d',
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '80%',
     marginBottom: '20px',
-    backgroundColor: '#006400', // Green consistent with Commerce Bank style
-    borderColor: '#006400',
-    fontSize: '16px',
   },
   table: {
     width: '80%',
-    maxWidth: '600px',
+    maxWidth: '800%',
     marginBottom: '20px',
     borderCollapse: 'collapse',
     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    border: '2px solid black', // Add a black border around the entire table
+    border: '2px solid grey',
+    borderRadius: '10px',
+    overflow: 'hidden', 
   },
   tableHeader: {
-    backgroundColor: '#006400', // Green for headers
+    backgroundColor: '#05654d',
     color: '#FFFFFF',
     fontWeight: 'bold',
-    padding: '10px',
-    fontSize: '16px',
-    textAlign: 'center',
-    borderBottom: '2px solid black', // Black horizontal line for header
-    border: 'none', // Hide vertical lines in header
+    padding: '15px',
+    fontSize: '18px',
+    textAlign: 'center', 
+    borderBottom: '2px solid grey',
+    border: 'none',
   },
   tableRow: {
     cursor: "pointer",
-    borderBottom: '2px solid black', // Black horizontal line for rows
+    borderBottom: '2px solid grey',
   },
   cellValue: {
-    padding: '10px',
-    textAlign: 'right',
-    border: 'none', // Hide vertical lines
+    padding: '15px',
+    textAlign: 'center', 
+    border: 'none', 
     fontSize: '14px',
   },
 };
+
 
 export default Loan_bk;
